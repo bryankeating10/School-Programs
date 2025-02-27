@@ -10,3 +10,5 @@ I tend to get carried away after completing an engineering assignment in MATLAB 
    * Calculates the intensity of a blackbody emission and plots the results
  * Differential Equation Practice
    * Plotting the motion of dynamic systems to visualize differential equation solutions I find in my homework
+ * Forced Convection Lab
+   * Using pandas data frames to manipulate spreadsheets of temperature measurements to calculate experimental heat transfer coefficient 
