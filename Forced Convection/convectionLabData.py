@@ -1,6 +1,7 @@
 import pandas as pd
 from math import sqrt, log as ln, pi
 import os
+import matplotlib.pyplot as plt
 
 # Read in the temperature data
 current_dir = os.path.dirname(__file__)
@@ -68,3 +69,19 @@ measured_data['Heat Transfer'] = None
 for index, exp in measured_data.iterrows():
 	measured_data.loc[index, 'Heat Transfer'] = exp['Heat Generation'] - exp['Heat Loss']
 print(measured_data)
+
+# Plot temperature vs position for each test in tests
+for test, data in tests.items():
+	positions = data.iloc[2, 1:].astype(float)
+	temperatures = data.iloc[1, 1:].astype(float)
+	plt.plot(positions, temperatures, label=test)
+	plt.xlabel('Position (m)')
+	plt.ylabel('Temperature (°C)')
+	plt.title('Temperature vs Position for Each Test')
+	plt.legend()
+	plt.show()
+
+
+# Caclulate heat transfer coefficient
+measured_data['Heat Transfer Coefficient'] = None
+
