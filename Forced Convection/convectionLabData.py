@@ -1,8 +1,10 @@
 import pandas as pd
 from math import sqrt, log as ln, pi
+import os
 
-# Read in the temperature data 
-file_path = r'Formatted Test Data.xlsx'
+# Read in the temperature data
+current_dir = os.path.dirname(__file__)
+file_path = os.path.join(current_dir,'Formatted Test Data.xlsx')
 excel_file = pd.ExcelFile(file_path)
 tests = {'Test 1 - High MFR Low Crnt': None, 'Test 2 - High MFR High Crnt': None, 
          'Test 3 - Low MFR High Crnt': None, 'Test 4 - Low MFR Low Crnt': None}
@@ -12,7 +14,8 @@ for sheet_name, test in zip(excel_file.sheet_names, tests):
     tests[test] = df
 
 # Read in the measured data
-file_path = r'Measured Data.xlsx'
+file_path = os.path.join(current_dir,'Measured Data.xlsx')
+excel_file = pd.ExcelFile(file_path)
 measured_data = pd.read_excel(file_path)
 
 # Calculate mass flow rate
