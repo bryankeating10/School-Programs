@@ -9,6 +9,7 @@ file_path = os.path.join(current_dir,'Formatted Test Data.xlsx')
 excel_file = pd.ExcelFile(file_path)
 tests = {'Test 1 - High MFR Low Crnt': None, 'Test 2 - High MFR High Crnt': None, 
          'Test 3 - Low MFR High Crnt': None, 'Test 4 - Low MFR Low Crnt': None}
+tests_temps = tests.copy()
 
 for sheet_name, test in zip(excel_file.sheet_names, tests):
     df = pd.read_excel(file_path, sheet_name=sheet_name)
@@ -74,21 +75,18 @@ print(measured_data)
 positions = tests['Test 1 - High MFR Low Crnt'].iloc[1].tolist()
 inside_pipe_x = positions[:7] # 7 thermocouples inside pipe
 outside_pipe_x = positions[7:13:2] # 3 thermocouples outside pipe and outside insulation (same position values)
+tests_temps = {key:{'Outside Pipe':[], 'Inside Pipe':[], 'Outside Insulation':[]} for key in tests.keys()}
 
 for test, data in tests.items():
+	print(test)
 	temperatures = data.iloc[0].tolist()
 	inside_pipe_temp = temperatures[:7]
-	print('Inside Pipe Temperatures:\n', inside_pipe_temp)
 	outside_pipe_temp = temperatures[7:13:2]
-	print('Outside Pipe Temperatures:\n', outside_pipe_temp)
 	outside_insulation_temp = temperatures[8:14:2]
-	print('Outside Insulation Temperatures:\n', outside_insulation_temp)
+	tests_temps[test]['Inside Pipe'] = inside_pipe_temp
+	tests_temps[test]['Outside Pipe'] = outside_pipe_temp
+	tests_temps[test]['Outside Insulation'] = outside_insulation_temp
 
-
-	# Check if the data is in the correct order
-	print(test)
-	print('Inside Pipe Positions:\n', inside_pipe_x)
-	print('Inside Pipe Temperatures:\n', inside_pipe_temp)
 
 	plt.plot(positions, temperatures, label=test)
 	plt.xlabel('Position (m)')
@@ -100,4 +98,4 @@ for test, data in tests.items():
 
 # Caclulate heat transfer coefficient
 measured_data['Heat Transfer Coefficient'] = None
-
+print(tests_temps)
