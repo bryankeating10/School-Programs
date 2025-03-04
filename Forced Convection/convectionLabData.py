@@ -71,30 +71,50 @@ for index, exp in measured_data.iterrows():
 	measured_data.loc[index, 'Heat Transfer'] = exp['Heat Generation'] - exp['Heat Loss']
 print(measured_data)
 
-# Splits the thermocouple readings by location
+# Splits the thermocouple readings by group
 positions = tests['Test 1 - High MFR Low Crnt'].iloc[1].tolist()
 inside_pipe_x = positions[:7] # 7 thermocouples inside pipe
 outside_pipe_x = positions[7:13:2] # 3 thermocouples outside pipe and outside insulation (same position values)
-tests_temps = {key:{'Outside Pipe':[], 'Inside Pipe':[], 'Outside Insulation':[]} for key in tests.keys()}
+tests_temps = {key:{'Outside Pipe':[], 'Inside Pipe':[], 'Outside Insulation':[]} for key in tests.keys()} # For recording temperature groups
 
+# Splits the temperature data by group
 for test, data in tests.items():
 	print(test)
 	temperatures = data.iloc[0].tolist()
-	inside_pipe_temp = temperatures[:7]
-	outside_pipe_temp = temperatures[7:13:2]
-	outside_insulation_temp = temperatures[8:14:2]
+	inside_pipe_temp = temperatures[:7]	# 7 thermocouples inside pipe
+	outside_pipe_temp = temperatures[7:13:2] # 3 thermocouples outside pipe
+	outside_insulation_temp = temperatures[8:14:2] # 3 thermocouples outside insulation
 	tests_temps[test]['Inside Pipe'] = inside_pipe_temp
 	tests_temps[test]['Outside Pipe'] = outside_pipe_temp
 	tests_temps[test]['Outside Insulation'] = outside_insulation_temp
 
+# Plot the temperature inside the pipe
+fig, ax = plt.subplots()
+for test, data in tests_temps.items():
+	ax.plot(inside_pipe_x, data['Inside Pipe'], label=test)
+plt.title('Temperature Inside Pipe')
+plt.xlabel('Position (m)')
+plt.ylabel('Temperature (°C)')
+plt.legend()
 
-	plt.plot(positions, temperatures, label=test)
-	plt.xlabel('Position (m)')
-	plt.ylabel('Temperature (°C)')
-	plt.title('Temperature vs Position for Each Test')
-	plt.legend()
-	plt.show()
+# Plot the temperature outside the pipe
+fig, ax = plt.subplots()
+for test, data in tests_temps.items():
+	ax.plot(outside_pipe_x, data['Outside Pipe'], label=test)
+plt.title('Temperature Outside Pipe')
+plt.xlabel('Position (m)')
+plt.ylabel('Temperature (°C)')
+plt.legend()
 
+# Plot the temperature outside the insulation
+fig, ax = plt.subplots()
+for test, data in tests_temps.items():
+	ax.plot(outside_pipe_x, data['Outside Insulation'], label=test)
+plt.title('Temperature Outside Insulation')
+plt.xlabel('Position (m)')
+plt.ylabel('Temperature (°C)')
+plt.legend()
+plt.show()
 
 # Caclulate heat transfer coefficient
 measured_data['Heat Transfer Coefficient'] = None
