@@ -72,14 +72,20 @@ print(measured_data)
 
 # Plot temperature vs position for each test in tests
 for test, data in tests.items():
-	positions = data.iloc[2, 1:].astype(float)
-	temperatures = data.iloc[1, 1:].astype(float)
-	plt.plot(positions, temperatures, label=test)
-	plt.xlabel('Position (m)')
-	plt.ylabel('Temperature (°C)')
-	plt.title('Temperature vs Position for Each Test')
-	plt.legend()
-	plt.show()
+	positions = data.iloc[1, 1:].astype(float)
+	temperatures = data.iloc[0, 1:].astype(float)
+	# Check if the data is in the correct order
+	print('Test:', test)
+	print('Shape:', data.shape)
+	print(data, '\n')
+	# print('Positions:', positions)
+	# print('Temperatures:', temperatures)
+	# plt.plot(positions, temperatures, label=test)
+	# plt.xlabel('Position (m)')
+	# plt.ylabel('Temperature (°C)')
+	# plt.title('Temperature vs Position for Each Test')
+	# plt.legend()
+	# plt.show()
 
 
 # Caclulate heat transfer coefficient
