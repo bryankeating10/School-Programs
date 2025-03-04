@@ -1,6 +1,0 @@
-	plt.plot(positions, temperatures, label=test)
-	plt.xlabel('Position (m)')
-	plt.ylabel('Temperature (°C)')
-	plt.title('Temperature vs Position for Each Test')
-	plt.legend()
-	plt.show()

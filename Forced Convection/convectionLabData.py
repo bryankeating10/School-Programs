@@ -2,6 +2,7 @@ import pandas as pd
 from math import sqrt, log as ln, pi
 import os
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Read in the temperature data
 current_dir = os.path.dirname(__file__)
@@ -79,7 +80,6 @@ tests_temps = {key:{'Outside Pipe':[], 'Inside Pipe':[], 'Outside Insulation':[]
 
 # Splits the temperature data by group
 for test, data in tests.items():
-	print(test)
 	temperatures = data.iloc[0].tolist()
 	inside_pipe_temp = temperatures[:7]	# 7 thermocouples inside pipe
 	outside_pipe_temp = temperatures[7:13:2] # 3 thermocouples outside pipe
@@ -90,6 +90,7 @@ for test, data in tests.items():
 
 # Function to plot temperature groups readings vs position
 def plot_groups(x, y_data, title, xlabel, ylabel, y_limits=None):
+	sns.set_theme(style='darkgrid')
 	fig, ax = plt.subplots()
 	for label, y in y_data.items():
 		ax.plot(x, y, label=label, marker='o', markersize=3)  # Add marker='o' to plot points along the line graph with smaller marker size
@@ -100,24 +101,13 @@ def plot_groups(x, y_data, title, xlabel, ylabel, y_limits=None):
 		plt.ylim(y_limits)
 	plt.legend()
 
-# Plot the temperature inside the pipe
-plot_groups(inside_pipe_x, {test: data['Inside Pipe'] for test, data in tests_temps.items()},
-				 'Temperature Inside Pipe', 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
-
-# Plot the temperature outside the pipe
-plot_groups(outside_pipe_x, {test: data['Outside Pipe'] for test, data in tests_temps.items()},
-				 'Temperature Outside Pipe', 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
-
-# Plot the temperature outside the insulation
-plot_groups(outside_pipe_x, {test: data['Outside Insulation'] for test, data in tests_temps.items()},
-				 'Temperature Outside Insulation', 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
-
 # Function to plot temperature data for a single test
 def plot_temps(test_name, test_data, title, xlabel, ylabel, y_limits=None):
+	sns.set_theme(style='darkgrid')
 	ax = plt.subplots()[1]
-	ax.plot(inside_pipe_x, test_data['Inside Pipe'], label='Inside Pipe', marker='o', markersize=3)
-	ax.plot(outside_pipe_x, test_data['Outside Pipe'], label='Outside Pipe', marker='o', markersize=3)
-	ax.plot(outside_pipe_x, test_data['Outside Insulation'], label='Outside Insulation', marker='o', markersize=3)
+	ax.plot(inside_pipe_x, test_data['Inside Pipe'], label='Inside Pipe', marker='o', markersize=3, color='purple')
+	ax.plot(outside_pipe_x, test_data['Outside Pipe'], label='Outside Pipe', marker='o', markersize=3, color='green')
+	ax.plot(outside_pipe_x, test_data['Outside Insulation'], label='Outside Insulation', marker='o', markersize=3, color='darkblue')
 	plt.title(f"{title} - {test_name}")
 	plt.xlabel(xlabel)
 	plt.ylabel(ylabel)
@@ -125,11 +115,20 @@ def plot_temps(test_name, test_data, title, xlabel, ylabel, y_limits=None):
 		plt.ylim(y_limits)
 	plt.legend()
 
+# Plot the temperature groups
+temperature_groups = {
+	'Temperature Inside Pipe': ('Inside Pipe', inside_pipe_x),
+	'Temperature Outside Pipe': ('Outside Pipe', outside_pipe_x),
+	'Temperature Outside Insulation': ('Outside Insulation', outside_pipe_x)}
+
+for title, (group, x) in temperature_groups.items():
+	plot_groups(x, {test: data[group] for test, data in tests_temps.items()},
+				title, 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
+
 # Plot temperatures for each test
 for test_name, test_data in tests_temps.items():
 	plot_temps(test_name, test_data, 'Temperature Profile', 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
 
 # Caclulate heat transfer coefficient
 measured_data['Heat Transfer Coefficient'] = None
-print(tests_temps)
 plt.show()
