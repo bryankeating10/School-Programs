@@ -1,3 +1,6 @@
-positions = data.iloc[1, 1:].astype(float)
-	temperatures = data.iloc[0, 1:].astype(float)
-	Check if the data is i
+	plt.plot(positions, temperatures, label=test)
+	plt.xlabel('Position (m)')
+	plt.ylabel('Temperature (°C)')
+	plt.title('Temperature vs Position for Each Test')
+	plt.legend()
+	plt.show()

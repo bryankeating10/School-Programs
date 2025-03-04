@@ -70,22 +70,32 @@ for index, exp in measured_data.iterrows():
 	measured_data.loc[index, 'Heat Transfer'] = exp['Heat Generation'] - exp['Heat Loss']
 print(measured_data)
 
-# Plot temperature vs position for each test in tests
+# Splits the thermocouple readings by location
+positions = tests['Test 1 - High MFR Low Crnt'].iloc[1].tolist()
+inside_pipe_x = positions[:7] # 7 thermocouples inside pipe
+outside_pipe_x = positions[7:13:2] # 3 thermocouples outside pipe and outside insulation (same position values)
+
 for test, data in tests.items():
-	positions = data.iloc[1, 1:].astype(float)
-	temperatures = data.iloc[0, 1:].astype(float)
+	temperatures = data.iloc[0].tolist()
+	inside_pipe_temp = temperatures[:7]
+	print('Inside Pipe Temperatures:\n', inside_pipe_temp)
+	outside_pipe_temp = temperatures[7:13:2]
+	print('Outside Pipe Temperatures:\n', outside_pipe_temp)
+	outside_insulation_temp = temperatures[8:14:2]
+	print('Outside Insulation Temperatures:\n', outside_insulation_temp)
+
+
 	# Check if the data is in the correct order
-	print('Test:', test)
-	print('Shape:', data.shape)
-	print(data, '\n')
-	# print('Positions:', positions)
-	# print('Temperatures:', temperatures)
-	# plt.plot(positions, temperatures, label=test)
-	# plt.xlabel('Position (m)')
-	# plt.ylabel('Temperature (°C)')
-	# plt.title('Temperature vs Position for Each Test')
-	# plt.legend()
-	# plt.show()
+	print(test)
+	print('Inside Pipe Positions:\n', inside_pipe_x)
+	print('Inside Pipe Temperatures:\n', inside_pipe_temp)
+
+	plt.plot(positions, temperatures, label=test)
+	plt.xlabel('Position (m)')
+	plt.ylabel('Temperature (°C)')
+	plt.title('Temperature vs Position for Each Test')
+	plt.legend()
+	plt.show()
 
 
 # Caclulate heat transfer coefficient
