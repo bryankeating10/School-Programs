@@ -70,7 +70,6 @@ measured_data['Heat Transfer'] = None
 
 for index, exp in measured_data.iterrows():
 	measured_data.loc[index, 'Heat Transfer'] = exp['Heat Generation'] - exp['Heat Loss']
-print(measured_data)
 
 # Splits the thermocouple readings by group
 positions = tests['Test 1 - High MFR Low Crnt'].iloc[1].tolist()
@@ -89,9 +88,12 @@ for test, data in tests.items():
 	tests_temps[test]['Outside Insulation'] = outside_insulation_temp
 
 # Function to plot temperature groups readings vs position
+
 def plot_groups(x, y_data, title, xlabel, ylabel, y_limits=None):
 	sns.set_theme(style='darkgrid')
 	fig, ax = plt.subplots()
+	fig.canvas.manager.window.wm_geometry("+%d+%d" % (fig.canvas.manager.window.winfo_screenwidth() // 2 - fig.get_figwidth() * fig.dpi // 2, 
+													  fig.canvas.manager.window.winfo_screenheight() // 2 - fig.get_figheight() * fig.dpi // 2))
 	for label, y in y_data.items():
 		ax.plot(x, y, label=label, marker='o', markersize=3)  # Add marker='o' to plot points along the line graph with smaller marker size
 	plt.title(title)
@@ -104,7 +106,9 @@ def plot_groups(x, y_data, title, xlabel, ylabel, y_limits=None):
 # Function to plot temperature data for a single test
 def plot_temps(test_name, test_data, title, xlabel, ylabel, y_limits=None):
 	sns.set_theme(style='darkgrid')
-	ax = plt.subplots()[1]
+	fig, ax = plt.subplots()
+	fig.canvas.manager.window.wm_geometry("+%d+%d" % (fig.canvas.manager.window.winfo_screenwidth() // 2 - fig.get_figwidth() * fig.dpi // 2, 
+													  fig.canvas.manager.window.winfo_screenheight() // 2 - fig.get_figheight() * fig.dpi // 2))
 	ax.plot(inside_pipe_x, test_data['Inside Pipe'], label='Inside Pipe', marker='o', markersize=3, color='purple')
 	ax.plot(outside_pipe_x, test_data['Outside Pipe'], label='Outside Pipe', marker='o', markersize=3, color='green')
 	ax.plot(outside_pipe_x, test_data['Outside Insulation'], label='Outside Insulation', marker='o', markersize=3, color='darkblue')
@@ -129,6 +133,16 @@ for title, (group, x) in temperature_groups.items():
 for test_name, test_data in tests_temps.items():
 	plot_temps(test_name, test_data, 'Temperature Profile', 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
 
-# Caclulate heat transfer coefficient
-measured_data['Heat Transfer Coefficient'] = None
-plt.show()
+
+print(measured_data)
+
+
+# Calculate the mean bulk temperature with right hand Riemann sum
+c_p = 1009 # Specific heat capacity of air (J/kg*K)
+bmt = {} # Bulk mean temperature
+
+for [test, data], mfr in zip(tests_temps.items(), measured_data['Mass Flow Rate']):
+	bmt[test] = [0] * 6
+	for i,j in zip(range(5),range(1,6)):
+		bmt[test][i] = (data['Inside Pipe'][i] + data['Inside Pipe'][j]) / (tests_temps[test]['Inside Pipe'][i]+tests_temps[test]['Inside Pipe'][j])
+print(bmt)
