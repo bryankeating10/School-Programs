@@ -144,5 +144,7 @@ bmt = {} # Bulk mean temperature
 for [test, data], mfr in zip(tests_temps.items(), measured_data['Mass Flow Rate']):
 	bmt[test] = [0] * 6
 	for i,j in zip(range(5),range(1,6)):
-		bmt[test][i] = (data['Inside Pipe'][i] + data['Inside Pipe'][j]) / (tests_temps[test]['Inside Pipe'][i]+tests_temps[test]['Inside Pipe'][j])
+		bmt[test][i] = (data['Inside Pipe'][i] + data['Inside Pipe'][j]) / (inside_pipe_x[i]+inside_pipe_x[j])
 print(bmt)
+
+plt.show()
