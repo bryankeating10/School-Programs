@@ -66,10 +66,10 @@ for test, data in tests.items():
 	index += 1
 
 # Calculate the heat transfer
-measured_data['Heat Transfer'] = None
+measured_data['Heat Transfer (q_gen - q_loss)'] = None
 
 for index, exp in measured_data.iterrows():
-	measured_data.loc[index, 'Heat Transfer'] = exp['Heat Generation'] - exp['Heat Loss']
+	measured_data.loc[index, 'Heat Transfer (q_gen - q_loss)'] = exp['Heat Generation'] - exp['Heat Loss']
 
 # Splits the thermocouple readings by group
 positions = tests['Test 1 - High MFR Low Crnt'].iloc[1].tolist()
@@ -132,8 +132,32 @@ for title, (group, x) in temperature_groups.items():
 # Plot temperatures for each test
 for test_name, test_data in tests_temps.items():
 	plot_temps(test_name, test_data, 'Temperature Profile', 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
+
 # Displays the plots
 # plt.show()
+
+# Calculate the mean bulk temperature
+measured_data['Bulk Mean Temperature'] = None
+
+for [test, data], run in zip(tests_temps.items(), range(4)):
+	measured_data.loc[run,'Bulk Mean Temperature'] = (data['Inside Pipe'][4] - data['Inside Pipe'][2]) / (inside_pipe_x[4]-inside_pipe_x[2])
+
+# Recalculate the heat transfer
+c_p = 1009 # Specific heat capacity of air (J/kg*K)
+measured_data['Heat Transfer (BMT)'] = None
+
+for index, exp in measured_data.iterrows():
+	measured_data.loc[index, 'Heat Transfer (BMT)'] = c_p*exp['Mass Flow Rate']*(exp['Bulk Mean Temperature']/(pi*d_i))
+
+
+
+
+
+
+
+
+
+
 
 # Writes the data to an excel file
 output_path = os.path.join(current_dir,'Forced Convection Calculations.xlsx')
@@ -148,18 +172,3 @@ with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
 		col_idx = measured_data.columns.get_loc(column)
 		worksheet.set_column(col_idx, col_idx, column_width)
 os.startfile(output_path)
-
-# Calculate the mean bulk temperature with right hand Riemann sum
-c_p = 1009 # Specific heat capacity of air (J/kg*K)
-bmt = {} # Bulk mean temperature (Delta T/deta x)
-
-for [test, data], mfr in zip(tests_temps.items(), measured_data['Mass Flow Rate']):
-	bmt[test] = (data['Inside Pipe'][4] - data['Inside Pipe'][2]) / (inside_pipe_x[4]-inside_pipe_x[2])
-	# Prints the temperatures and positions for each test
-	print(f"Test: {test}")
-	print(f"T3: {data['Inside Pipe'][2]}")
-	print(f"T5: {data['Inside Pipe'][4]}")
-	print(f"Position T3: {inside_pipe_x[2]}")
-	print(f"Position T5: {inside_pipe_x[4]}")
-	print()
-print(bmt)
