@@ -137,26 +137,37 @@ for test_name, test_data in tests_temps.items():
 # plt.show()
 
 # Calculate the mean bulk temperature
-measured_data['Bulk Mean Temperature'] = None
+measured_data['Bulk Mean Temperature Slope'] = None
 
 for [test, data], run in zip(tests_temps.items(), range(4)):
-	measured_data.loc[run,'Bulk Mean Temperature'] = (data['Inside Pipe'][4] - data['Inside Pipe'][2]) / (inside_pipe_x[4]-inside_pipe_x[2])
+	measured_data.loc[run,'Bulk Mean Temperature Slope'] = (data['Inside Pipe'][4] - data['Inside Pipe'][2]) / (inside_pipe_x[4]-inside_pipe_x[2])
 
 # Recalculate the heat transfer
 c_p = 1009 # Specific heat capacity of air (J/kg*K)
 measured_data['Heat Transfer (BMT)'] = None
 
 for index, exp in measured_data.iterrows():
-	measured_data.loc[index, 'Heat Transfer (BMT)'] = c_p*exp['Mass Flow Rate']*(exp['Bulk Mean Temperature']/(pi*d_i))
+	measured_data.loc[index, 'Heat Transfer (BMT)'] = c_p*exp['Mass Flow Rate']*(exp['Bulk Mean Temperature Slope']/(pi*d_i))
 
+# Compute air temperature for each x value
+predicted_temps = {}
+for index, exp in measured_data.iterrows():
+	bmt_slope = exp['Bulk Mean Temperature Slope']
+	initial_temp = exp['Inlet Temp']
+	predicted_temps[exp['Experiment']] = [(initial_temp + (position * bmt_slope))-273.15 for position in inside_pipe_x]
 
-
-
-
-
-
-
-
+# Plot the predicted temperatures
+for test_name, temps in predicted_temps.items():
+	sns.set_theme(style='darkgrid')
+	fig, ax = plt.subplots()
+	fig.canvas.manager.window.wm_geometry("+%d+%d" % (fig.canvas.manager.window.winfo_screenwidth() // 2 - fig.get_figwidth() * fig.dpi // 2, 
+													  fig.canvas.manager.window.winfo_screenheight() // 2 - fig.get_figheight() * fig.dpi // 2))
+	ax.plot(inside_pipe_x, temps, label='Predicted Temperatures', marker='o', markersize=3, color='purple')
+	ax.plot(inside_pipe_x, tests_temps[test_name]['Inside Pipe'], label='Measured Temperatures', marker='o', markersize=3, color='green')
+	plt.xlabel('Position (m)')
+	plt.title(f"{test_name[:6]} Predicted Temperatures")
+	plt.ylabel('Temperature (°C)')
+	plt.legend()
 
 
 # Writes the data to an excel file
@@ -172,3 +183,4 @@ with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
 		col_idx = measured_data.columns.get_loc(column)
 		worksheet.set_column(col_idx, col_idx, column_width)
 os.startfile(output_path)
+plt.show()
