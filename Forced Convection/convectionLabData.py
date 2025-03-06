@@ -162,13 +162,20 @@ for test_name, temps in predicted_temps.items():
 	fig, ax = plt.subplots()
 	fig.canvas.manager.window.wm_geometry("+%d+%d" % (fig.canvas.manager.window.winfo_screenwidth() // 2 - fig.get_figwidth() * fig.dpi // 2, 
 													  fig.canvas.manager.window.winfo_screenheight() // 2 - fig.get_figheight() * fig.dpi // 2))
-	ax.plot(inside_pipe_x, temps, label='Predicted Temperatures', marker='o', markersize=3, color='purple')
-	ax.plot(inside_pipe_x, tests_temps[test_name]['Inside Pipe'], label='Measured Temperatures', marker='o', markersize=3, color='green')
+	ax.plot(inside_pipe_x, temps, label='Predicted Air Temp', marker='o', markersize=3, color='purple')
+	ax.plot(inside_pipe_x, tests_temps[test_name]['Inside Pipe'], label='Measured Pipe Temp', marker='o', markersize=3, color='green')
 	plt.xlabel('Position (m)')
-	plt.title(f"{test_name[:6]} Predicted Temperatures")
+	plt.title(f"{test_name} Predicted Temperatures")
 	plt.ylabel('Temperature (°C)')
 	plt.legend()
 
+# Calculate heat transfer coefficient
+measured_data['Heat Transfer Coefficient'] = None
+
+for index, exp in measured_data.iterrows():
+	pipe_temp = tests_temps[exp['Experiment']]['Inside Pipe'][3]
+	air_temp = predicted_temps[exp['Experiment']][3]
+	measured_data.loc[index, 'Heat Transfer Coefficient'] = exp['Heat Transfer (q_gen - q_loss)'] / (pipe_temp - air_temp)
 
 # Writes the data to an excel file
 output_path = os.path.join(current_dir,'Forced Convection Calculations.xlsx')
@@ -183,4 +190,4 @@ with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
 		col_idx = measured_data.columns.get_loc(column)
 		worksheet.set_column(col_idx, col_idx, column_width)
 os.startfile(output_path)
-plt.show()
+# plt.show()
