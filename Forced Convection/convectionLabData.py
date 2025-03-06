@@ -133,10 +133,6 @@ for title, (group, x) in temperature_groups.items():
 for test_name, test_data in tests_temps.items():
 	plot_temps(test_name, test_data, 'Temperature Profile', 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
 
-
-print(measured_data)
-
-
 # Calculate the mean bulk temperature with right hand Riemann sum
 c_p = 1009 # Specific heat capacity of air (J/kg*K)
 bmt = {} # Bulk mean temperature (Delta T/deta x)
@@ -149,4 +145,16 @@ print(bmt)
 
 plt.show()
 
-# Function to calculate the Nusselt number
+# Writes the data to an excel file
+output_path = os.path.join(current_dir,'Forced Convection Calculations.xlsx')
+with pd.ExcelWriter(output_path) as writer:
+	measured_data.to_excel(writer, sheet_name='Calculations', index=False)
+with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
+	measured_data.to_excel(writer, sheet_name='Calculations', index=False)
+	workbook  = writer.book
+	worksheet = writer.sheets['Calculations']
+	for column in measured_data:
+		column_width = max(measured_data[column].astype(str).map(len).max(), len(column))
+		col_idx = measured_data.columns.get_loc(column)
+		worksheet.set_column(col_idx, col_idx, column_width)
+os.startfile(output_path)
