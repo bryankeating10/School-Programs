@@ -132,17 +132,7 @@ for title, (group, x) in temperature_groups.items():
 # Plot temperatures for each test
 for test_name, test_data in tests_temps.items():
 	plot_temps(test_name, test_data, 'Temperature Profile', 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
-
-# Calculate the mean bulk temperature with right hand Riemann sum
-c_p = 1009 # Specific heat capacity of air (J/kg*K)
-bmt = {} # Bulk mean temperature (Delta T/deta x)
-
-for [test, data], mfr in zip(tests_temps.items(), measured_data['Mass Flow Rate']):
-	bmt[test] = [0] * 6
-	for i,j in zip(range(5),range(1,6)):
-		bmt[test][i] = (data['Inside Pipe'][i] + data['Inside Pipe'][j]) / (inside_pipe_x[i]+inside_pipe_x[j])
-print(bmt)
-
+# Displays the plots
 plt.show()
 
 # Writes the data to an excel file
@@ -158,3 +148,11 @@ with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
 		col_idx = measured_data.columns.get_loc(column)
 		worksheet.set_column(col_idx, col_idx, column_width)
 os.startfile(output_path)
+
+# Calculate the mean bulk temperature with right hand Riemann sum
+c_p = 1009 # Specific heat capacity of air (J/kg*K)
+bmt = {} # Bulk mean temperature (Delta T/deta x)
+
+for [test, data], mfr in zip(tests_temps.items(), measured_data['Mass Flow Rate']):
+	bmt[test] = (data['Inside Pipe'][2] + data['Inside Pipe'][4]) / (inside_pipe_x[2]+inside_pipe_x[4])
+print(bmt)
