@@ -177,6 +177,27 @@ for index, exp in measured_data.iterrows():
 	air_temp = predicted_temps[exp['Experiment']][3]
 	measured_data.loc[index, 'Heat Transfer Coefficient'] = exp['Heat Transfer (q_gen - q_loss)'] / (pipe_temp - air_temp)
 
+# Theoretical Reynolds number
+measured_data['Reynolds Number'] = None
+air_viscosity = 1.846e-5 # Dynamic viscosity of air (kg/m*s)
+
+for index, exp in measured_data.iterrows():
+	measured_data.loc[index, 'Reynolds Number'] = (4*exp['Mass Flow Rate'])/(air_viscosity*pi*d_i)
+
+# Theoretical Nusselt number
+measured_data['Theoretical Nu'] = None
+prandtl_number = 0.707 # Prandtl number for air
+k_air = 0.028 # Thermal conductivity of air (W/mK)
+
+for index, exp in measured_data.iterrows():
+	measured_data.loc[index, 'Theoretical Nu'] = (exp['Heat Transfer Coefficient']*d_i)/k_air
+
+# Correlated Nusselt number
+measured_data['Correlated Nu'] = None
+
+for index, exp in measured_data.iterrows():
+	measured_data.loc[index, 'Correlated Nu'] = 0.023*(exp['Reynolds Number']**0.8)*(prandtl_number**0.4)
+
 # Writes the data to an excel file
 output_path = os.path.join(current_dir,'Forced Convection Calculations.xlsx')
 with pd.ExcelWriter(output_path) as writer:
