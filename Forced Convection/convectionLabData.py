@@ -42,6 +42,7 @@ for index, exp in measured_data.iterrows():
 # Calculate heat generation
 d_i = 0.03261 # Pipe diameter (m)
 d_0 = 0.05326 # Insulation outer diameter (m)
+area_pipe = pi*(d_i**2)/4 # Pipe cross-sectional area (m^2)
 pipe_length = 1.7526 # (m)
 
 measured_data['Power'] = None
@@ -197,6 +198,19 @@ measured_data['Correlated Nu'] = None
 
 for index, exp in measured_data.iterrows():
 	measured_data.loc[index, 'Correlated Nu'] = 0.023*(exp['Reynolds Number']**0.8)*(prandtl_number**0.4)
+
+# Theoretical friction factor
+measured_data['Theoretical Friction Factor'] = None
+
+for index, exp in measured_data.iterrows():
+	measured_data.loc[index, 'Theoretical Friction Factor'] = (2*exp['Pipe Mano']*water_density*9.81
+	*exp['Air Density']*d_i*area_pipe**2/(exp['Mass Flow Rate']**2*pipe_length))
+
+# Correlated friction factor
+measured_data['Correlated Friction Factor'] = None
+
+for index, exp in measured_data.iterrows():
+	measured_data.loc[index, 'Correlated Friction Factor'] = 0.316/(exp['Reynolds Number']**0.25)
 
 # Writes the data to an excel file
 output_path = os.path.join(current_dir,'Forced Convection Calculations.xlsx')
