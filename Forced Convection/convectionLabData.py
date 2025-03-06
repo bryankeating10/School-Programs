@@ -133,7 +133,7 @@ for title, (group, x) in temperature_groups.items():
 for test_name, test_data in tests_temps.items():
 	plot_temps(test_name, test_data, 'Temperature Profile', 'Position (m)', 'Temperature (°C)', y_limits=(20, 100))
 # Displays the plots
-plt.show()
+# plt.show()
 
 # Writes the data to an excel file
 output_path = os.path.join(current_dir,'Forced Convection Calculations.xlsx')
@@ -154,5 +154,12 @@ c_p = 1009 # Specific heat capacity of air (J/kg*K)
 bmt = {} # Bulk mean temperature (Delta T/deta x)
 
 for [test, data], mfr in zip(tests_temps.items(), measured_data['Mass Flow Rate']):
-	bmt[test] = (data['Inside Pipe'][2] + data['Inside Pipe'][4]) / (inside_pipe_x[2]+inside_pipe_x[4])
+	bmt[test] = (data['Inside Pipe'][4] - data['Inside Pipe'][2]) / (inside_pipe_x[4]-inside_pipe_x[2])
+	# Prints the temperatures and positions for each test
+	print(f"Test: {test}")
+	print(f"T3: {data['Inside Pipe'][2]}")
+	print(f"T5: {data['Inside Pipe'][4]}")
+	print(f"Position T3: {inside_pipe_x[2]}")
+	print(f"Position T5: {inside_pipe_x[4]}")
+	print()
 print(bmt)
