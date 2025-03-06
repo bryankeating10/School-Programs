@@ -139,7 +139,7 @@ print(measured_data)
 
 # Calculate the mean bulk temperature with right hand Riemann sum
 c_p = 1009 # Specific heat capacity of air (J/kg*K)
-bmt = {} # Bulk mean temperature
+bmt = {} # Bulk mean temperature (Delta T/deta x)
 
 for [test, data], mfr in zip(tests_temps.items(), measured_data['Mass Flow Rate']):
 	bmt[test] = [0] * 6
@@ -148,3 +148,5 @@ for [test, data], mfr in zip(tests_temps.items(), measured_data['Mass Flow Rate'
 print(bmt)
 
 plt.show()
+
+# Function to calculate the Nusselt number
