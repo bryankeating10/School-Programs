@@ -246,4 +246,4 @@ with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
 		worksheet.set_column(col_idx, col_idx, column_width)
 
 os.startfile(output_path)
-# plt.show()
+plt.show()
