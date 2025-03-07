@@ -212,6 +212,19 @@ measured_data['Correlated Friction Factor'] = None
 for index, exp in measured_data.iterrows():
 	measured_data.loc[index, 'Correlated Friction Factor'] = 0.316/(exp['Reynolds Number']**0.25)
 
+# Theoretical stanton number
+measured_data['Theoretical Stanton Number'] = None
+
+for index, exp in measured_data.iterrows():
+	measured_data.loc[index, 'Theoretical Stanton Number'] = ((pi*d_i**2*exp['Heat Transfer Coefficient'])
+															/(exp['Air Density']*c_p*exp['Mass Flow Rate']))
+
+# Correlated stanton number
+measured_data['Correlated Stanton Number'] = None
+
+for index, exp in measured_data.iterrows():
+	measured_data.loc[index, 'Correlated Stanton Number'] = exp['Correlated Friction Factor']*prandtl_number**(-2/3)/8
+
 # Writes the data to an excel file
 output_path = os.path.join(current_dir,'Forced Convection Calculations.xlsx')
 with pd.ExcelWriter(output_path) as writer:
