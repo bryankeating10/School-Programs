@@ -226,16 +226,24 @@ for index, exp in measured_data.iterrows():
 	measured_data.loc[index, 'Correlated Stanton Number'] = exp['Correlated Friction Factor']*prandtl_number**(-2/3)/8
 
 # Writes the data to an excel file
-output_path = os.path.join(current_dir,'Forced Convection Calculations.xlsx')
-with pd.ExcelWriter(output_path) as writer:
-	measured_data.to_excel(writer, sheet_name='Calculations', index=False)
+output_path = os.path.join(current_dir, 'Forced Convection Calculations.xlsx')
+
+# Check if the file exists, if not create it
+if not os.path.exists(output_path):
+	print()
+	print(f'Creating file "Forced Convection Calculations.xlsx" at {output_path}')
+	print()
+	with open(output_path, 'w') as f:
+		pass
+
 with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
 	measured_data.to_excel(writer, sheet_name='Calculations', index=False)
-	workbook  = writer.book
+	workbook = writer.book
 	worksheet = writer.sheets['Calculations']
 	for column in measured_data:
 		column_width = max(measured_data[column].astype(str).map(len).max(), len(column))
 		col_idx = measured_data.columns.get_loc(column)
 		worksheet.set_column(col_idx, col_idx, column_width)
+
 os.startfile(output_path)
 # plt.show()
