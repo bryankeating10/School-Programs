@@ -14,3 +14,5 @@ I tend to get carried away after completing an engineering assignment in MATLAB 
    * Using pandas data frames to manipulate spreadsheets of temperature measurements to calculate experimental heat transfer coefficient
  * Anisotropic Material Stiffness
    * Predicting the stress and strain values in direction theta for a material subjected to axial, transverse, and shear stresses.
+ * Anisotropic Material Strength
+   * Predicting the strength properties and margin of safeties for a material in a range of orientations subjected to axial, transverse, and shear stresses.
