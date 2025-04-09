@@ -170,6 +170,21 @@ for test_name, temps in predicted_temps.items():
 	plt.ylabel('Temperature (°C)')
 	plt.legend()
 
+# PLot the difference between the predicted and measured temperatures
+sns.set_theme(style='darkgrid')
+fig, ax = plt.subplots()
+fig.canvas.manager.window.wm_geometry("+%d+%d" % (fig.canvas.manager.window.winfo_screenwidth() // 2 - fig.get_figwidth() * fig.dpi // 2, 
+												  fig.canvas.manager.window.winfo_screenheight() // 2 - fig.get_figheight() * fig.dpi // 2))
+
+for test_name, temps in predicted_temps.items():
+	temp_diff = [temps[i] - tests_temps[test_name]['Inside Pipe'][i] for i in range(7)]
+	ax.plot(inside_pipe_x, temp_diff, label=f'{test_name} Wall vs Bulk', marker='o', markersize=3)
+
+plt.xlabel('Position (m)')
+plt.title('Wall vs Bulk Temperature Differences')
+plt.ylabel('Temperature Difference (°C)')
+plt.legend()
+
 # Calculate heat transfer coefficient
 measured_data['Heat Transfer Coefficient'] = None
 
@@ -203,7 +218,7 @@ for index, exp in measured_data.iterrows():
 measured_data['Theoretical Friction Factor'] = None
 
 for index, exp in measured_data.iterrows():
-	measured_data.loc[index, 'Theoretical Friction Factor'] = (2*exp['Pipe Mano']*water_density*9.81
+	measured_data.loc[index, 'Theoretical Friction Factor'] = (2*(exp['Orifice Mano']-exp['Pipe Mano'])*water_density*9.81
 	*exp['Air Density']*d_i*area_pipe**2/(exp['Mass Flow Rate']**2*pipe_length))
 
 # Correlated friction factor
