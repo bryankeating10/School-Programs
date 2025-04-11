@@ -3,6 +3,7 @@ from math import sqrt, log as ln, pi
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+from openpyxl.styles import Alignment
 
 # Read in the engine data to a dictionary of dataframes
 current_dir = os.path.dirname(__file__)
@@ -26,8 +27,8 @@ bore_diameter = 0.068  # m
 stroke_length = 0.045  # m
 n_p = 2 # Revolutions per power stroke
 
-
 # Fuel constants
+hhv = 47.3e6  # J/kg (higher heating value of gasoline)
 density = 750  # kg/m^3
 
 # Measured Brake power (MBP) calculation in Watts
@@ -55,7 +56,26 @@ for test in tests.values():
 for test in tests.values():
 	test['Brake Torque (Nm)'] = test['MBP (W)'] / (2 * pi * test['RPM'])
 
+# Conversion efficiency (Conv Eff) calculation in %
+for test in tests.values():
+	test['Conv Eff (%)'] = (test['MBP (W)'] * 100) / (test['FFR (m^3/s)'] * hhv)
 
+# Write the data to a results Excel file
+output_file_path = os.path.join(current_dir, 'Engine Calculations.xlsx')
+with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
+	for sheet_name, df in tests.items():
+		df.to_excel(writer, sheet_name=sheet_name, index=False)
+		worksheet = writer.sheets[sheet_name]
+		for col_idx, col in enumerate(df.columns, start=1):
+			column_width = max(df[col].astype(str).map(len).max(), len(col)) + 2
+			worksheet.column_dimensions[worksheet.cell(row=1, column=col_idx).column_letter].width = column_width
+		# Center align all cells
+		for row in worksheet.iter_rows(min_row=1, max_row=worksheet.max_row, min_col=1, max_col=worksheet.max_column):
+			for cell in row:
+				cell.alignment = Alignment(horizontal='center', vertical='center')
+
+# Open the results Excel file
+os.startfile(output_file_path)
 
 
 display_df(tests)
