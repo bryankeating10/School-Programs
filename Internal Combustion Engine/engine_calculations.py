@@ -1,8 +1,6 @@
 import pandas as pd
 from math import sqrt, log as ln, pi
 import os
-import matplotlib.pyplot as plt
-import seaborn as sns
 from openpyxl.styles import Alignment
 import metric_to_imperical as mti
 
@@ -51,6 +49,9 @@ for sheet,data in tests.items():
 # Brake specific fuel consumption (BSFC) calculation in kg/Nm
 for test in tests.values():
 	test['BSFC (kg/Nm)'] = test['FFR (m^3/s)'] / test['MBP (W)']
+# Imperical
+for sheet,data in tests.items():
+	imperical_values[sheet]['BSFC (lb/hp-hr)'] = mti.bsfc_conversion(data[['BSFC (kg/Nm)']])
 
 # Rev time calculation in seconds
 for test in tests.values():
@@ -59,14 +60,23 @@ for test in tests.values():
 # Brake mean effective pressure (BMEP) calculation in Pa
 for test in tests.values():
 	test['BMEP (Pa)'] = test['MBP (W)'] * n_p / (engine_displacement * test['Rev Time (s)'])
+# Imperical
+for sheet,data in tests.items():
+	imperical_values[sheet]['BMEP (psi)'] = mti.bmep_conversion(data[['BMEP (Pa)']])
 
 # Brake torque calculation in Nm
 for test in tests.values():
 	test['Brake Torque (Nm)'] = test['MBP (W)'] / (2 * pi * test['RPM'])
+# Imperical
+for sheet,data in tests.items():	
+	imperical_values[sheet]['Brake Torque (lb-ft)'] = mti.torque_conversion(data[['Brake Torque (Nm)']])
 
 # Conversion efficiency (Conv Eff) calculation in %
 for test in tests.values():
 	test['Conv Eff (%)'] = (test['MBP (W)'] * 100) / (test['FFR (m^3/s)'] * hhv)
+# Imperical
+for sheet,data in tests.items():
+	imperical_values[sheet]['Conv Eff (%)'] = data['Conv Eff (%)']
 
 # Write the data to a results Excel file
 def write_results_to_excel(dataframes, output_file_path):
