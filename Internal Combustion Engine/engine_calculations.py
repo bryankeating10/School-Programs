@@ -92,14 +92,17 @@ def write_results_to_excel(dataframes, output_file_path):
 				for cell in row:
 					cell.alignment = Alignment(horizontal='center', vertical='center')
 
-output_file_path = os.path.join(current_dir, 'Engine Calculations.xlsx')
-write_results_to_excel(tests, output_file_path)
-imp_output_file_path = os.path.join(current_dir, 'Imperical Engine Calculations.xlsx')
-write_results_to_excel(imperical_values, imp_output_file_path)
 
-# Open the results Excel file
-os.startfile(output_file_path)
-os.startfile(imp_output_file_path)
+# Only runs if this file is executed directly
+if __name__ == "__main__":
+	output_file_path = os.path.join(current_dir, 'Engine Calculations.xlsx')
+	write_results_to_excel(tests, output_file_path)
+	imp_output_file_path = os.path.join(current_dir, 'Imperical Engine Calculations.xlsx')
+	write_results_to_excel(imperical_values, imp_output_file_path)
+
+	# Open the results Excel file
+	os.startfile(output_file_path)
+	os.startfile(imp_output_file_path)
 
 # print('Tests')
 # display_df(tests)

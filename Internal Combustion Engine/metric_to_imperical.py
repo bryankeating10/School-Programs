@@ -4,7 +4,7 @@ Description:
 Converts Watts to Horsepower.
 
 Parameters:
-Watts (float): Power in Watts.
+watts (float): Power in Watts.
 
 Output:
 Horsepower (float): Power in Horsepower.
@@ -37,7 +37,7 @@ Output:
 lbperhpHr (float): Brake specific fuel consumption in lb/hp-hr.
 '''
 def bsfc_conversion(kgperNm):
-	return kgperNm * 0.0005 * 3600 / 2.20462
+	return kgperNm * 5917592.9
 
 '''
 Description:
